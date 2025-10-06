@@ -5,8 +5,6 @@ describe('工具库基础功能测试', () => {
     test('map 应该正确映射数组元素', () => {
       const numbers = [1, 2, 3, 4];
       expect(_.map(numbers, n => n * 2)).toEqual([2, 4, 6, 8]);
-      
-      // 测试索引参数
       expect(_.map(numbers, (n, i) => i)).toEqual([0, 1, 2, 3]);
     });
 
@@ -129,7 +127,6 @@ describe('工具库基础功能测试', () => {
 
   describe('极端情况测试', () => {
     test('处理超大数组', () => {
-      // 创建包含100000个元素的数组
       const largeArray = Array.from({ length: 100000 }, (_, i) => i);
       
       // 测试map性能

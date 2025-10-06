@@ -57,7 +57,7 @@ export default _ = (function() {
     // 处理循环引用
     if (hash.get(value)) return hash.get(value);
     let cloneObj = new value.constructor();
-    // 找到的是所属类原型上的constructor,而原型上的 constructor指向的是当前类本身
+    // 找到的是所属类原型上的constructor, 而原型上的 constructor指向的是当前类本身
     hash.set(value, cloneObj);
     for (const key in value) {
       if (value.hasOwnProperty(key)) {
@@ -99,7 +99,9 @@ export default _ = (function() {
       const value = getElement(collection, i);
       try {
         if (predicate(value, i, collection)) result.push(value);
-      } catch (e) { /* 忽略错误 */ }
+      } catch (e) {
+        // 忽略异常
+      }
     }
     return result;
   };
@@ -142,7 +144,7 @@ export default _ = (function() {
     return curryN(func.length, []);
   };
   // 链式调用&惰性求值
-  // 柯里化核心方法，用于链式调用
+  // 柯里化核心方法
   const curriedMethods = {
     map: curry(map),
     filter: curry(filter),
