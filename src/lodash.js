@@ -192,14 +192,145 @@ export default _ = (function() {
     };
   });
 
-  return {
-    // 核心方法
-    map,
-    filter,
-    reduce,
-    
-    // 函数式工具
-    curry,
-    chain: value => new Wrapper(value)
-  };
+
+    const debounce = (func, wait, options) => {
+        if(typeof func !== 'function') {
+            throw new TypeError('Expected a function');
+        }
+        wait = wait || 0;
+        const { leading = false, trailing = true } = options || {};
+        let timer = null;
+        let lastParams = null;
+        let lastThis = null;
+
+        function leadingCall() {
+            //  leading 为 true, 则 func 会在 wait 时间前被调用
+            if (leading) {
+                invokeFun();
+                // wait 定时，等待 trailing 阶段
+                timer = setTimeout(() => {
+                    timer = null;
+                }, wait);
+            } else {
+                // leading 为 false, 直接调用 trailing 阶段
+                trailingCall();
+            }
+        }
+        function trailingCall() {
+            if(timer) {
+                clearTimeout(timer);
+            }
+            timer = setTimeout(() => {
+                if(trailing) {
+                    invokeFun();
+                }
+                timer = null;
+            }, wait);
+        }
+
+        function invokeFun() {
+            func.apply(lastThis, lastParams);
+            lastParams = null;
+            lastThis = null;
+        }
+
+        return function (...args) {
+            lastParams = args;
+            lastThis = this;
+
+            if (!timer) {
+                leadingCall();
+                return;
+            } else {
+                trailingCall();
+            }
+        }
+    }
+
+    const throttle = (func, wait, options) => {
+        if(typeof func !== 'function') {
+            throw new TypeError('Expected a function');
+        }
+        wait = wait || 0;
+        const { leading = true, trailing = true } = options || {};
+        
+        let lastThis = null;
+        let lastParams = null;
+        let timer = null;
+        const leadingCall = () => {
+            if(leading) {
+                invokeFun();
+            }
+            if(wait === 0) {
+                timer = null
+            } else {
+                timer = setTimeout(() => {
+                    timer = null;
+                    if(trailing && lastParams) {
+                        invokeFun();
+                    }
+                }, wait);
+            }
+            
+        };
+        const invokeFun = () => {
+            func.apply(lastThis, lastParams);
+            lastParams = null;
+            lastThis = null;
+        }
+
+        return function throttled(...args) {
+            lastParams = args;
+            lastThis = this;
+            if(!timer) {
+                leadingCall();
+            }
+        };
+    }
+
+    const compose = (fns) => {
+        if(!Array.isArray(fns)) {
+            fns = [fns];
+        }
+
+        return function composed(...args) {
+            
+            if(fns.length === 0) {
+                return args[0];
+            }
+            let index = 0
+
+            let result = null;
+            while(index < fns.length) {
+                const fn = fns[index]
+                if(typeof fn !== 'function') {
+                    throw new TypeError('Expected a function');
+                }
+                if(index == 0) {
+                    result = fn.call(this, ...args)
+                } else {
+                    result = fn.call(this, result)
+                }
+                index++;
+
+            }
+            return result;
+            
+        }
+    }
+
+
+    return {
+        // 核心方法
+        map,
+        filter,
+        reduce,
+        
+        // 函数式工具
+        curry,
+        chain: value => new Wrapper(value),
+        debounce,
+        throttle,
+        compose,
+    };
 })();
