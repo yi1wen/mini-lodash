@@ -150,8 +150,9 @@ export default _ = (function() {
     filter: curry(filter),
     reduce: curry(reduce)
   };
-  // 调用栈包装器
+  // 调用栈包装器, 实现链式调用和惰性求值
   function Wrapper(value) {
+    // 实现函数调用缓存
     this.__value = deepClone(value); // 深拷贝避免修改原始数据
     this.__actions = [];
     this.__lazy = true;
@@ -172,12 +173,13 @@ export default _ = (function() {
     return result;
   };
 
+  // 立刻执行链式调用
   Wrapper.prototype.run = function() {
     this.__value = this.value();
     this.__lazy = false;
     return this;
   };
-
+  // 为每个核心方法添加链式调用支持
   Object.keys(curriedMethods).forEach(method => {
     Wrapper.prototype[method] = function(...args) {
       if (this.__lazy) {
