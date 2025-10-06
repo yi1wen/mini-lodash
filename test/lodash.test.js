@@ -424,13 +424,13 @@ describe('throttle', () => {
         let throttledFn;
 
         beforeEach(() => {
-        jest.useFakeTimers();
-        mockFn = jest.fn();
+            jest.useFakeTimers();
+            mockFn = jest.fn();
         });
 
         afterEach(() => {
-        jest.clearAllTimers();
-        jest.useRealTimers();
+            jest.clearAllTimers();
+            jest.useRealTimers();
         });
 
         describe('leading: true, trailing: true (默认)', () => {
@@ -463,9 +463,9 @@ describe('throttle', () => {
             
             expect(mockFn).toHaveBeenCalledTimes(2);
         });
-        });
+    });
 
-        describe('leading: true, trailing: false', () => {
+    describe('leading: true, trailing: false', () => {
         beforeEach(() => {
             throttledFn = throttle(mockFn, 100, { leading: true, trailing: false });
         });
@@ -648,12 +648,12 @@ describe('compose', () => {
         test('应该保持 this 绑定', () => {
             const obj = {
             value: 10,
-            add(x) {
-                return this.value + x;
-            },
-            multiply(y) {
-                return this.value * y;
-            }
+                add(x) {
+                    return this.value + x;
+                },
+                multiply(y) {
+                    return this.value * y;
+                }
             };
 
             const addThenMultiply = compose([obj.add, obj.multiply]);
